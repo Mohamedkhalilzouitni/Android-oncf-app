@@ -25,7 +25,7 @@ import java.net.URLEncoder;
 public class WebService extends AsyncTask<String,String,String> {
 
     ProgressDialog loading;
-    static int idTicket,numTrain;
+    static int idTicket,numTrain, size;
     String result;
     Context context;
     private static String typ;
@@ -96,19 +96,14 @@ public class WebService extends AsyncTask<String,String,String> {
                     int result = data.getInt("success");
                     Toast.makeText(context, "success "+String.valueOf(result), Toast.LENGTH_SHORT).show();
                     if (result == 1) {
-                        int size = data.getInt("size");
+                        size = data.getInt("size");
                         idTicket = data.getInt("idTicket");
                         numTrain = data.getInt("NumTrain");
-                        items [0][0] =  String.valueOf(idTicket);
-                        items [0][1] =  String.valueOf(numTrain);
-                        Toast.makeText(context, "Train : "+String.valueOf(numTrain), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(context, "Ticket : "+String.valueOf(idTicket), Toast.LENGTH_SHORT).show();
-
                         JSONArray categories = reader.getJSONArray("categories");
                         for (int i = 0; i < categories.length(); i++) {
                             JSONObject jsonobject = categories.getJSONObject(i);
                             int Categorie = jsonobject.getInt("categorie"+String.valueOf(i+1));
-                            items [0][i+2] = String.valueOf(Categorie);
+                            items [0][i] = String.valueOf(Categorie);
                         }
                         items = new String[size+1][5];
                         String[] singleArray;
@@ -123,7 +118,7 @@ public class WebService extends AsyncTask<String,String,String> {
                             items [i] = (String[]) singleArray;
                         }
                     }
-                    move(result,items,idTicket,numTrain);
+                    move(result,items,idTicket,numTrain,size);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -133,13 +128,14 @@ public class WebService extends AsyncTask<String,String,String> {
         }
     }
 
-    private void move(int res, String[][] a,int i,int j) {
+    private void move(int res, String[][] a,int i,int j, int k) {
         if (res == 1) {
             final Intent intent = new Intent(context, secondSplash.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Bundle b = new Bundle();
             b.putSerializable("restoData", a);
             b.putInt("idTicket", i);
+            b.putInt("size", k);
             b.putInt("numTrain", j);
             context.startActivity(intent);
         } else {
